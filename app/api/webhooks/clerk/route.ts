@@ -68,10 +68,10 @@ export async function POST(req: Request) {
       photo: image_url,
     };
 
+    const newUser = await createUser(user);
+
     return NextResponse.json({ message: "OK", user: user });
   }
-
-  // const newUser = await createUser(user);
 
   //   if (newUser) {
   //     await clerkClient.users.updateUserMetadata(id, {
