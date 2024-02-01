@@ -70,44 +70,44 @@ export async function POST(req: Request) {
       photo: image_url,
     };
 
-    // const newUser = await createUser(user);
+    const newUser = await createUser(user);
 
-    return NextResponse.json({ message: "OK", user: user });
+    //   return NextResponse.json({ message: "OK", user: newUser });
+    // }
+
+    if (newUser) {
+      await clerkClient.users.updateUserMetadata(id, {
+        publicMetadata: {
+          userId: newUser._id,
+        },
+      });
+    }
+
+    return NextResponse.json({ message: "OK", user: newUser });
   }
 
-  //   if (newUser) {
-  //     await clerkClient.users.updateUserMetadata(id, {
-  //       publicMetadata: {
-  //         userId: newUser._id,
-  //       },
-  //     });
-  //   }
+  if (eventType === "user.updated") {
+    const { id, image_url, first_name, last_name, username } = evt.data;
 
-  //   return NextResponse.json({ message: "OK", user: newUser });
-  // }
+    const user = {
+      firstName: first_name,
+      lastName: last_name,
+      username: username!,
+      photo: image_url,
+    };
 
-  // if (eventType === "user.updated") {
-  //   const { id, image_url, first_name, last_name, username } = evt.data;
+    const updatedUser = await updateUser(id, user);
 
-  //   const user = {
-  //     firstName: first_name,
-  //     lastName: last_name,
-  //     username: username!,
-  //     photo: image_url,
-  //   };
+    return NextResponse.json({ message: "OK", user: updatedUser });
+  }
 
-  //   const updatedUser = await updateUser(id, user);
+  if (eventType === "user.deleted") {
+    const { id } = evt.data;
 
-  //   return NextResponse.json({ message: "OK", user: updatedUser });
-  // }
+    const deletedUser = await deleteUser(id!);
 
-  // if (eventType === "user.deleted") {
-  //   const { id } = evt.data;
-
-  //   const deletedUser = await deleteUser(id!);
-
-  //   return NextResponse.json({ message: "OK", user: deletedUser });
-  // }
+    return NextResponse.json({ message: "OK", user: deletedUser });
+  }
 
   return new Response("", { status: 200 });
 }
